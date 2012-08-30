@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <title>Hub.ci: Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Continuous integration as a service">
+    <meta name="author" content="Artemisia Solutions">
+
+
+
+    <!-- Le styles -->
+    <link href="/s/css/bootstrap.css" rel="stylesheet">
+    <link href="/s/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/s/css/main.css" rel="stylesheet">
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="mainContent">
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <div class="header">
+                    <h1>Doctasia: Administration</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12 content">
+                <div class="content-header">That's a header</div>
+                <div class="content-main">
+                    <div id="loginForm">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+    <div class="clearfooter"></div>
+</div>
+<footer class="navbar  modal-footer">
+    <div class="copyrights">
+        <p> &copy; 2012 Artemisia Solutions</p>
+    </div>
+</footer>
+
+
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/s/js/ext/ejs.min.js"></script>
+<!--<script type="text/javascript" src="/s/js/ejs.js"></script>-->
+
+<script type="text/javascript" src="/s/js/ext/bootstrap.js"></script>
+<script type="text/javascript" src="/s/js/ext/jquerySpinner.js"></script>
+<script type="text/javascript" src="/s/js/ext/jsrender.js"></script>
+<script type="text/javascript" src="/s/js/ext/highcharts.js"></script>
+<script type="text/javascript" src="/s/js/ext/jquery.timeago.js"></script>
+<script type='text/javascript' src="/s/js/ext/knockout-2.1.0.js"></script>
+
+<script type="text/javascript" src="/s/js/facade.js"></script>
+
+<script type="text/javascript" src="/s/js/ext/jquery.base64.js"></script>
+
+
+
+<script type="text/javascript">
+
+    var previousPage
+
+    function handleHashChange() {
+        var hash = window.location.hash
+
+        var page = "home.html"
+
+        $('#content').addClass('container')
+
+        if(hash) {
+            var hashData = hash.split("/")
+            if(hashData.length >= 2) {
+                page = hashData[1] + ".html"
+            }
+        }
+
+        Facade.getLoginStatus(function(err, res) {
+            if(err) {
+                throw err
+            } if (!res.isAuthenticated) {
+                page = 'home.html'
+
+            }
+            if(page !== previousPage) {
+                previousPage = page
+                $('#content').spinner()
+                $('#content').load('/s/'+page, function(response, status, xhr) {
+                    if (status == "error") {
+                        var msg = "Sorry but there was an error loading the page ["+page+"]: "
+                        $('#content').html(msg + xhr.status + " " + xhr.statusText)
+                    }
+                })
+            }
+        })
+    }
+
+    function changeLoginContainer() {
+        Facade.getLoginStatus(function(err, res) {
+            if(err) {
+                throw err
+            } else {
+                if(res.isAuthenticated) {
+                    $('#loginContainer').html('<li><a href="/#/user">Admins</a></li><li><a href="/user/logout">Logout</a></li>')
+                } else {
+                    $('#loginContainer').html('')
+                }
+            }
+        })
+    }
+
+    $(window).bind('hashchange', handleHashChange)
+
+    $(document).ready(function() {
+        handleHashChange()
+        changeLoginContainer()
+    })
+
+</script>
+
+<script type="text/javascript">
+
+    function handleHashChange() {
+        var hash = window.location.hash
+        if(hash === '') {
+            displayLoginContainer()
+        }
+    }
+
+    function displayLoginContainer() {
+        Facade.getLoginStatus(function(err, status) {
+            if(err) {
+                throw err
+            } else {
+                console.log(status)
+                if(status.isFirstLogin) {
+                    displayCreateFirstUser('loginForm')
+                } else if(status.isAuthenticated) {
+                    displayHomePage('loginForm')
+                } else {
+                    displayLogin('loginForm')
+                }
+            }
+        })
+    }
+
+    function displayHomePage(container) {
+        $('#'+container).html('Welcome ')
+    }
+
+    function displayLogin(container) {
+
+        function verifyData() {
+
+            if(inputUser.val().length < 3) {
+                helpBlockUser.html('Username must contains at least 3 characters')
+                divCtrlUser.addClass("error")
+                return false
+            } else {
+                helpBlockUser.html('')
+                divCtrlUser.removeClass("error")
+            }
+
+            if(inputPassword.val().length < 4) {
+                helpBlockPassword.html('Password must contains at least 4 characters')
+                divCtrlPassword.addClass("error")
+                return false
+            } else {
+                helpBlockPassword.html('')
+                divCtrlPassword.removeClass("error")
+            }
+
+            return true
+        }
+
+        var form                = $('<form action="/user/login" method="POST" class="form-horizontal"></form>')
+        var fieldset            = $('<fieldset></fieldset>')
+        var legend              = $('<legend>Authenticate</legend>')
+        var divUser             = $('<div class="control-group"></div>')
+        var divPassword         = $('<div class="control-group"></div>')
+        var divCtrlUser         = $('<div class="controls"></div>')
+        var divCtrlPassword     = $('<div class="controls"></div>')
+        var labelUser           = $('<label class="control-label" for="username">Username: </label>')
+        var inputUser           = $('<input type="text" id="username" name="username"/>')
+        var labelPassword       = $('<label class="control-label" for="password">Password: </label>')
+        var inputPassword       = $('<input type="password" id="password" name="password"/>')
+        var helpBlockUser       = $('<p class="help-block"></p>')
+        var helpBlockPassword   = $('<p class="help-block"></p>')
+        var formActions         = $('<div class="form-actions"></div>')
+        var submit              = $('<button class="btn btn-primary">Sign-in</button>')
+
+        form.append(fieldset)
+
+        fieldset.append(legend)
+        fieldset.append(divUser)
+        fieldset.append(divPassword)
+
+        fieldset.append(formActions)
+
+        divUser.append(labelUser)
+        divUser.append(divCtrlUser)
+
+        divPassword.append(labelPassword)
+        divPassword.append(divCtrlPassword)
+
+        divCtrlUser.append(inputUser)
+        divCtrlUser.append(helpBlockUser)
+
+        divCtrlPassword.append(inputPassword)
+        divCtrlPassword.append(helpBlockPassword)
+
+        formActions.append(submit)
+
+        $('#'+container).html(form)
+
+    }
+
+    function displayCreateFirstUser(container) {
+
+        function verifyData() {
+
+            if(inputUser.val().length < 3) {
+                helpBlockUser.html('Username must contains at least 3 characters')
+                divCtrlUser.addClass("error")
+                return false
+            } else {
+                helpBlockUser.html('')
+                divCtrlUser.removeClass("error")
+            }
+
+            if(inputPassword1.val().length < 4) {
+                helpBlockPassword1.html('Password must contains at least 4 characters')
+                divCtrlPassword1.addClass("error")
+                return false
+            } else {
+                helpBlockPassword1.html('')
+                divCtrlPassword1.removeClass("error")
+            }
+
+            if(inputPassword1.val() !== inputPassword2.val()) {
+                helpBlockPassword2.html('Passwords must be the same')
+                divCtrlPassword2.addClass("error")
+                return false
+            } else {
+                helpBlockPassword2.html('')
+                divCtrlPassword2.removeClass("error")
+            }
+
+            return true
+        }
+
+        var form                = $('<form action="/user" method="POST" class="form-horizontal"></form>')
+        var fieldset            = $('<fieldset></fieldset>')
+        var legend              = $('<legend>This is the first login, create a user</legend>')
+        var divUser             = $('<div class="control-group"></div>')
+        var divPassword1        = $('<div class="control-group"></div>')
+        var divPassword2        = $('<div class="control-group"></div>')
+        var divCtrlUser         = $('<div class="controls"></div>')
+        var divCtrlPassword1    = $('<div class="controls"></div>')
+        var divCtrlPassword2    = $('<div class="controls"></div>')
+        var labelUser           = $('<label class="control-label" for="username">Username: </label>')
+        var inputUser           = $('<input type="text" id="username" name="name"/>')
+        var labelPassword1      = $('<label class="control-label" for="password1">Password: </label>')
+        var labelPassword2      = $('<label class="control-label" for="password2">Confirm password: </label>')
+        var inputPassword1      = $('<input type="password" id="password1" name="pass1"/>')
+        var inputPassword2      = $('<input type="password" id="password2" name="pass2"/>')
+        var helpBlockUser       = $('<p class="help-block"></p>')
+        var helpBlockPassword1  = $('<p class="help-block"></p>')
+        var helpBlockPassword2  = $('<p class="help-block"></p>')
+        var formActions         = $('<div class="form-actions"></div>')
+        var submit              = $('<button class="btn btn-primary">Create user</button>')
+
+        form.append(fieldset)
+
+        fieldset.append(legend)
+        fieldset.append(divUser)
+        fieldset.append(divPassword1)
+        fieldset.append(divPassword2)
+
+        fieldset.append(formActions)
+
+        divUser.append(labelUser)
+        divUser.append(divCtrlUser)
+
+        divPassword1.append(labelPassword1)
+        divPassword1.append(divCtrlPassword1)
+
+        divPassword2.append(labelPassword2)
+        divPassword2.append(divCtrlPassword2)
+
+        divCtrlUser.append(inputUser)
+        divCtrlUser.append(helpBlockUser)
+
+        divCtrlPassword1.append(inputPassword1)
+        divCtrlPassword1.append(helpBlockPassword1)
+
+        divCtrlPassword2.append(inputPassword2)
+        divCtrlPassword2.append(helpBlockPassword2)
+
+        formActions.append(submit)
+
+        $('#'+container).html(form)
+    }
+
+    $('window').bind('hashchange', handleHashChange())
+
+</script>
+</body>
+</html>

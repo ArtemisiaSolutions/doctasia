@@ -2,6 +2,18 @@
     "name": "doctasia",
     "version": "0.0.1",
     "private": false,
+    "author": "Eric Leveau <ptit6sky@gmail.com>",
+    "description": "a simple wiki for documentation oriented website",
+    "contributors": [
+        {
+            "name": "Eric Leveau",
+            "email": "ptit6sky@gmail.com"
+        },
+        {
+            "name": "Nicolas Herment",
+            "email": "nherment@gmail.com"
+        }
+    ],
     "scripts": {
         "start": "node server.js"
     },

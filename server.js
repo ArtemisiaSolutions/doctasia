@@ -1,7 +1,7 @@
 var DBReady     = require("./lib/database/Helper.js").Event
 
 
-DBReady.on('ready', function(){
+DBReady.on('ready', function() {
 
     /** ************************************ **/
     /**                EXPRESS               **/
@@ -20,7 +20,7 @@ DBReady.on('ready', function(){
     app.use('/s', express.static(__dirname + '/static'))
     app.use(express.bodyParser())
     app.use(express.cookieParser())
-    app.use(express.session({ secret: 'keyboard cat' }))
+    app.use(express.session({ secret: 'doctasia wikipedia' }))
     app.use(passport.initialize())
     app.use(passport.session())
     app.use(responseError.middleware())
@@ -34,8 +34,10 @@ DBReady.on('ready', function(){
     /**             NAMESPACES               **/
     /** ************************************ **/
     var UsersService = require("./lib/ws/UsersService.js")
+    var PagesService = require("./lib/ws/PagesService.js")
 
-    app.namespace("/users", UsersService(app))
+    app.namespace("/user", UsersService(app))
+    app.namespace("/page", PagesService(app))
 
 
     /** ************************************ **/
