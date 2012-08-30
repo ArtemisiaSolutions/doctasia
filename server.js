@@ -34,14 +34,8 @@ DBReady.on('ready', function(){
     /**             NAMESPACES               **/
     /** ************************************ **/
     var UsersService = require("./lib/ws/UsersService.js")
-    var WorkersService = require("./lib/ws/WorkersService.js")
-    var BuildService = require("./lib/ws/BuildService.js")
-    var AdminsService = require("./lib/ws/AdminsService.js")
 
     app.namespace("/users", UsersService(app))
-    app.namespace("/workers", WorkersService(app))
-    app.namespace("/build", BuildService(app))
-    app.namespace("/admins", AdminsService(app))
 
 
     /** ************************************ **/

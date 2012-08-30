@@ -10,6 +10,7 @@
         "express-namespace" : "",
         "mongodb"           : "",
         "bcrypt"            : ">= 0.5.x",
+        "serial"            : "",
         "passport"          : "",
         "passport-local"    : ""
     }
