@@ -151,7 +151,6 @@
             if(err) {
                 throw err
             } else {
-                console.log(status)
                 if(status.isFirstLogin) {
                     displayCreateFirstUser('loginForm')
                 } else if(status.isAuthenticated) {
