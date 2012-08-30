@@ -13,7 +13,7 @@ Getting started
 
 
 License
-=======
+-------
 
 The MIT License (MIT)
 Copyright (c) 2012 Artemisia Solutions
