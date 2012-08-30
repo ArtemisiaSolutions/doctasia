@@ -42,7 +42,7 @@ DBReady.on('ready', function(){
     /**              SERVER START            **/
     /** ************************************ **/
 
-    var PORT = 4201
+    var PORT = 3000
     app.listen(PORT)
     console.log("Listening on http://localhost:"+PORT+"/")
 })
