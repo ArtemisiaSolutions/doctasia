@@ -1,4 +1,4 @@
-require("should")
+var should = require("should")
 
 
 describe("Test section 1", function() {
