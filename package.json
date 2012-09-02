@@ -26,5 +26,8 @@
         "serial"            : "",
         "passport"          : "",
         "passport-local"    : ""
+    },
+    "devDependencies": {
+        "should"            : ""
     }
 }
