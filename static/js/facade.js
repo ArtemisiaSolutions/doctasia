@@ -62,3 +62,25 @@ Facade.login = function(login, pass, callback) {
         }
     })
 }
+
+
+/** ************************************ **/
+/**                INSTALL               **/
+/** ************************************ **/
+
+Facade.getInstallStatus = function(callback){
+    $.ajax({
+        url: "/install/",
+        type: "GET",
+        success:function(result){
+            if(result && result._error) {
+                callback(new Error(result._error), undefined)
+            } else {
+                callback(undefined, result)
+            }
+        },
+        error: function(err) {
+            callback(err, undefined)
+        }
+    })
+}

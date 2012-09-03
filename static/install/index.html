@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <title>Hub.ci: Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Continuous integration as a service">
+    <meta name="author" content="Artemisia Solutions">
+
+    <!-- Le styles -->
+    <link href="/s/css/bootstrap.css" rel="stylesheet">
+    <link href="/s/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/s/css/main.css" rel="stylesheet">
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="mainContent">
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <div class="header">
+                    <h1>Doctasia: Install</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12 content">
+                <div class="content-header">That's a header</div>
+                <div class="content-main">
+                    <div id="installForm">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+    <div class="clearfooter"></div>
+</div>
+<footer class="navbar  modal-footer">
+    <div class="copyrights">
+        <p> &copy; 2012 Artemisia Solutions</p>
+    </div>
+</footer>
+
+
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/s/js/ext/ejs.min.js"></script>
+<!--<script type="text/javascript" src="/s/js/ejs.js"></script>-->
+
+<script type="text/javascript" src="/s/js/ext/bootstrap.js"></script>
+<script type="text/javascript" src="/s/js/ext/jquerySpinner.js"></script>
+<script type="text/javascript" src="/s/js/ext/jsrender.js"></script>
+<script type="text/javascript" src="/s/js/ext/highcharts.js"></script>
+<script type="text/javascript" src="/s/js/ext/jquery.timeago.js"></script>
+<script type='text/javascript' src="/s/js/ext/knockout-2.1.0.js"></script>
+
+<script type="text/javascript" src="/s/js/facade.js"></script>
+
+<script type="text/javascript" src="/s/js/ext/jquery.base64.js"></script>
+
+
+
+<script type="text/javascript">
+
+    var previousPage
+
+    function handleHashChange() {
+        var hash = window.location.hash
+
+        var page = "home.html"
+
+        $('#content').addClass('container')
+
+        if(hash) {
+            var hashData = hash.split("/")
+            if(hashData.length >= 2) {
+                page = hashData[1] + ".html"
+            }
+        }
+        Facade.getInstallStatus(function(err,res){
+            if(err) {
+                throw err
+            }
+            if (res) {
+                page = 'home.html'
+            }
+            //If install is already done, redirect to home page
+            if(page !== previousPage) {
+                previousPage = page
+                $('#content').spinner()
+                $('#content').load('/s/'+page, function(response, status, xhr) {
+                    if (status == "error") {
+                        var msg = "Sorry but there was an error loading the page ["+page+"]: "
+                        $('#content').html(msg + xhr.status + " " + xhr.statusText)
+                    }
+                })
+            }
+        })
+    }
+
+    $(window).bind('hashchange', handleHashChange)
+
+    $(document).ready(function() {
+        handleHashChange()
+    })
+
+</script>
+
+<script type="text/javascript">
+
+    function handleHashChange() {
+        var hash = window.location.hash
+        if(hash === '') {
+            displayInstallContainer()
+        }
+    }
+
+    function displayInstallContainer() {
+        Facade.getInstallStatus(function(err, status) {
+            if(err) {
+                throw err
+            } else {
+                if(!status) {
+                    displayInstallForm('installForm')
+                }
+            }
+        })
+    }
+
+
+    function displayInstallForm(container) {
+
+        function verifyData() {
+
+            if(inputUser.val().length < 1) {
+                helpBlockUser.html('Username must contains at least 1 character')
+                divCtrlUser.addClass("error")
+                return false
+            } else {
+                helpBlockUser.html('')
+                divCtrlUser.removeClass("error")
+            }
+
+            if(inputPassword.val().length < 1) {
+                helpBlockPassword.html('Password must contains at least 1 characters')
+                divCtrlPassword.addClass("error")
+                return false
+            } else {
+                helpBlockPassword.html('')
+                divCtrlPassword.removeClass("error")
+            }
+
+            if(inputDBHost.val().length < 1) {
+                helpBlockDBHost.html('Database host must contains at least 1 characters')
+                divCtrlDBHost.addClass("error")
+                return false
+            } else {
+                helpBlockDBHost.html('')
+                divCtrlDBHost.removeClass("error")
+            }
+
+            if(inputDBName.val().length < 1) {
+                helpBlockDBName.html('Database name must contains at least 1 characters')
+                divCtrlDBName.addClass("error")
+                return false
+            } else {
+                helpBlockDBName.html('')
+                divCtrlDBName.removeClass("error")
+            }
+
+            if(inputDBPort.val().length < 1) {
+                helpBlockDBPort.html('Database port must contains at least 1 characters')
+                divCtrlDBPort.addClass("error")
+                return false
+            } else {
+                helpBlockDBPort.html('')
+                divCtrlDBPort.removeClass("error")
+            }
+            return true
+        }
+
+        var form                = $('<form action="/install" method="POST" class="form-horizontal"></form>')
+        var fieldset            = $('<fieldset></fieldset>')
+        var legend              = $('<legend>Database configuration</legend>')
+        var divDBName           = $('<div class="control-group"></div>')
+        var divDBHost           = $('<div class="control-group"></div>')
+        var divDBPort           = $('<div class="control-group"></div>')
+        var divPassword         = $('<div class="control-group"></div>')
+        var divUser             = $('<div class="control-group"></div>')
+
+        var divCtrlUser         = $('<div class="controls"></div>')
+        var divCtrlPassword     = $('<div class="controls"></div>')
+        var divCtrlDBName       = $('<div class="controls"></div>')
+        var divCtrlDBHost       = $('<div class="controls"></div>')
+        var divCtrlDBPort       = $('<div class="controls"></div>')
+
+        var labelDBName         = $('<label class="control-label" for="dbname">Database name: </label>')
+        var inputDBName         = $('<input type="text" id="name" name="name"/>')
+        var labelDBHost         = $('<label class="control-label" for="dbhost">Database host: </label>')
+        var inputDBHost         = $('<input type="text" id="host" name="host"/>')
+        var labelDBPort         = $('<label class="control-label" for="dbport">Database port: </label>')
+        var inputDBPort         = $('<input type="text" id="port" name="port"/>')
+        var labelUser           = $('<label class="control-label" for="username">Username: </label>')
+        var inputUser           = $('<input type="text" id="user" name="user"/>')
+        var labelPassword       = $('<label class="control-label" for="password">Password: </label>')
+        var inputPassword       = $('<input type="password" id="password" name="password"/>')
+
+        var helpBlockUser       = $('<p class="help-block"></p>')
+        var helpBlockPassword   = $('<p class="help-block"></p>')
+        var helpBlockDBName     = $('<p class="help-block"></p>')
+        var helpBlockDBHost     = $('<p class="help-block"></p>')
+        var helpBlockDBPort     = $('<p class="help-block"></p>')
+
+        var formActions         = $('<div class="form-actions"></div>')
+        var submit              = $('<button class="btn btn-primary">Save</button>')
+
+        form.append(fieldset)
+
+        fieldset.append(legend)
+
+        fieldset.append(divDBName)
+        fieldset.append(divDBHost)
+        fieldset.append(divDBPort)
+
+        fieldset.append(divUser)
+        fieldset.append(divPassword)
+
+        fieldset.append(formActions)
+
+        divUser.append(labelUser)
+        divPassword.append(labelPassword)
+        divDBName.append(labelDBName)
+        divDBHost.append(labelDBHost)
+        divDBPort.append(labelDBPort)
+
+
+        divPassword.append(divCtrlPassword)
+        divUser.append(divCtrlUser)
+        divDBName.append(divCtrlDBName)
+        divDBHost.append(divCtrlDBHost)
+        divDBPort.append(divCtrlDBPort)
+
+        divCtrlPassword.append(inputPassword);
+        divCtrlPassword.append(helpBlockPassword);
+        divCtrlUser.append(inputUser);
+        divCtrlPassword.append(helpBlockUser);
+        divCtrlDBHost.append(inputDBHost);
+        divCtrlPassword.append(helpBlockDBHost);
+        divCtrlDBPort.append(inputDBPort);
+        divCtrlPassword.append(helpBlockDBPort);
+        divCtrlDBName.append(inputDBName);
+        divCtrlPassword.append(helpBlockDBName);
+
+
+        formActions.append(submit)
+
+        $('#'+container).html(form)
+
+    }
+
+
+    $('window').bind('hashchange', handleHashChange())
+
+</script>
+</body>
+</html>
