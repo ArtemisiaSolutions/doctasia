@@ -20,27 +20,36 @@
 </head>
 
 <body>
+
 <div class="mainContent">
-    <div class="container">
-        <div class="row">
-            <div class="span12">
-                <div class="header">
-                    <div class="pull-right">
-                        <a class="btn btn-danger" title="logout" href="/user/logout"><i class="icon-off icon-white"></i></a>
-                    </div>
-                    <h1>Doctasia: Administration</h1>
-                </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="span12 content">
-                <div class="content-main">
-                    <div id="loginForm">
+        <div id="loginForm" class="login-form">
 
+            <form action="/user/login" method="POST" class="form-horizontal">
+                <fieldset>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="control-label" for="username">Username: </label>
+                            <input type="text" id="username" name="username"/>
+                            <p class="help-block"></p>
+                        </div>
                     </div>
-                </div>
-            </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="control-label" for="password">Password: </label>
+                            <input type="password" id="password" name="password"/>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <button id="signin-btn" class="btn btn-primary pull-right">Sign-in</button>
+                        </div>
+                    </div>
+
+
+                </fieldset>
+            </form>
         </div>
 
     </div> <!-- /container -->
@@ -56,18 +65,7 @@
     </div>
 </footer>
 
-
-
-<!-- Placed at the end of the document so the pages load faster -->
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js"></script>
-
-<script type="text/javascript" src="/s/js/ext/ejs.min.js"></script>
-<!--<script type="text/javascript" src="/s/js/ejs.js"></script>-->
-
 <script type="text/javascript" src="/s/js/ext/bootstrap.js"></script>
-<script type="text/javascript" src="/s/js/ext/jquerySpinner.js"></script>
-<script type="text/javascript" src="/s/js/ext/jsrender.js"></script>
 
 <script type="text/javascript" src="/s/js/facade.js"></script>
 

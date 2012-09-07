@@ -5,7 +5,8 @@
     var express         = require("express")
     require('express-namespace')
 
-    var app             = express.createServer()
+    var app = express();
+
     var responseError   = require("./lib/util/ResponseError.js")
     var passport        = require("passport")
     var authHandler     = require("./lib/auth/AuthenticationHandler.js")
@@ -25,7 +26,11 @@
     app.use(authHandler.middleware())
 
     app.get('/', function (req, res) {
-        res.sendfile("./static/index.html")
+        res.sendfile(__dirname+"/static/index.html")
+    })
+
+    app.get('/admin', function (req, res) {
+        res.sendfile(__dirname+"/static/admin.html")
     })
 
     /** ************************************ **/
