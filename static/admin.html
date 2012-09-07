@@ -28,21 +28,24 @@
                     <div class="pull-right">
                         <a class="btn btn-danger" title="logout" href="/user/logout"><i class="icon-off icon-white"></i></a>
                     </div>
-                    <h1>Doctasia: Administration</h1>
+                    <h1>Administration</h1>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="span12 content">
-                <div class="content-main">
-                    <div id="loginForm">
-
-                    </div>
-                </div>
+            <div class="span12">
+                <ul id="adminTopMenu" class="nav nav-pills">
+                    <li id="menu-menus"><a href="#/menus">Menus</a></li>
+                    <li id="menu-pages"><a href="#/pages">Pages</a></li>
+                    <li id="menu-files"><a href="#/files">Files</a></li>
+                    <li id="menu-config"><a href="#/config">Configuration</a></li>
+                </ul>
             </div>
         </div>
+        <div id="adminContent">
 
+        </div>
     </div> <!-- /container -->
     <div class="clearfooter"></div>
 </div>
@@ -70,6 +73,56 @@
 <script type="text/javascript" src="/s/js/ext/jsrender.js"></script>
 
 <script type="text/javascript" src="/s/js/facade.js"></script>
+
+<script type="text/javascript">
+
+    var previousPage
+
+    function handleHashChange() {
+        var hash = window.location.hash
+
+        var page = "menus.html"
+
+        if(hash) {
+
+            var hashData = hash.split("/")
+            if(hashData.length >= 2) {
+                page = hashData[1] + ".html"
+            }
+        }
+
+        if(page !== previousPage) {
+            updateTopMenu(previousPage, page)
+            previousPage = page
+            $('#adminContent').spinner()
+            $('#adminContent').load('/s/admin/'+page, function(response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Sorry but there was an error loading the page ["+page+"]: "
+                    $('#adminContent').html(msg + xhr.status + " " + xhr.statusText)
+                }
+            })
+        }
+    }
+
+    function updateTopMenu(previousPage, newPage) {
+        if(previousPage) {
+            var prevPageName = previousPage.split(".")[0]
+            if($('#menu-'+prevPageName)) {
+                $('#menu-'+prevPageName).removeClass();
+            }
+        }
+        if(newPage) {
+            var newPageName = newPage.split(".")[0]
+            if($('#menu-'+newPageName)) {
+                $('#menu-'+newPageName).addClass('active');
+            }
+        }
+
+    }
+
+    $(window).bind('hashchange', handleHashChange)
+    handleHashChange()
+</script>
 
 </body>
 </html>
