@@ -1,51 +1,68 @@
 
 <div class="row">
-    <div class="span3 content">
+    <div class="span3">
+        <button id="createNewPage" class="btn btn-success"><i class="icon-plus icon-white"></i> Create a new page</button>
         <form class="searchBar" action="javascript: search()">
             <input type="text" name="searchValue" class="search-query" placeholder="Search..." autocomplete="off" data-autocomplete="searchAutocompleteResults">
         </form>
+        <div id="pageListDiv" class="content"></div>
 
     </div>
     <div class="span9 content">
 
         <div class="content-header">
-            <button id="createNewPage" class="btn btn-success"><i class="icon-plus icon-white"></i> Create a new page</button>
+
             <div class="pull-right">
-                <button class="btn btn-danger" title="Delete"><i class="icon-remove icon-white"></i> delete</button>
-                <button class="saveCurrent btn btn-primary" title="Save"><i class="icon-ok icon-white"></i> save</button>
+                <button class="btn btn-danger btn-mini" rel="tooltip" title="Delete"><i class="icon-remove icon-white"></i> delete</button>
+                <button class="saveCurrent btn btn-primary" rel="tooltip" title="Save"><i class="icon-ok icon-white"></i> save</button>
+            </div>
+
+            <div>
+
+                &nbsp;&nbsp;
             </div>
         </div>
 
         <div class="content-main ">
 
             <div>
-                <form>
-                    <fieldset>
-                        <div class="control-group">
-                            <div class="controls">
+                <form id="pageEditForm">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <div class="control-group">
                                 <label class="control-label" for="pageName">Page name: </label>
                                 <input type="text" id="pageName" name="pageName"/>
                                 <p class="help-block"></p>
                             </div>
-                            <div class="controls">
-                                <label class="control-label" for="pageMenu">Assigned menu: </label>
-                                <input type="text" id="pageMenu" name="pageMenu"/>
+                            <div class="control-group">
+                                <label class="control-label" for="pageUrl">Page url: </label>
+                                <input type="text" id="pageUrl" name="pageUrl"/>
                                 <p class="help-block"></p>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <div class="controls">
-                                <label class="control-label" for="pageContent">Content: </label>
-                                <textarea id="pageContent" name="pageContent" class="ta" width="100%"/>
-                                <p class="help-block"></p>
+                        <div class="span6">
+                            <div class="control-group">
+                                <label class="control-label">Format: </label>
+                                <label class="radio">
+                                    <input type="radio" name="pageFormat" value="HTML" checked>
+                                    HTML
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="pageFormat" value="Markdown">
+                                    Markdown
+                                </label>
                             </div>
                         </div>
-                        <div class="pull-right">
-                            <button class="saveCurrent btn btn-primary" title="Save"><i class="icon-ok icon-white"></i> save</button>
-                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="pageContent">Content: </label>
+                        <textarea id="pageContent" name="pageContent" class="content-edit" width="100%"/>
+                        <p class="help-block"></p>
+                    </div>
 
-                    </fieldset>
-
+                    <div class="pull-right">
+                        <button class="saveCurrent btn btn-primary" title="Save"><i class="icon-ok icon-white"></i> save</button>
+                    </div>
 
                 </form>
             </div>
@@ -53,6 +70,95 @@
     </div>
 </div>
 
+<script id="pageListTmpl" type="text/template">
+    <ul>
+        {#pages}
+        <li><a href="/page/{url}">{name}</a></li>
+        {~n}
+        {/pages}
+    </ul>
+</script>
+
 <script type="text/javascript">
-    $()
+
+    var tmpl = $("#pageListTmpl").html()
+
+    var compiled = dust.compile(tmpl, "pageList");
+//    var compiled = dust.compile("Hello {name}!", "intro");
+    dust.loadSource(compiled);
+    function updatePageList() {
+        Facade.listPages(function(err, pages) {
+            if(err) {
+                throw err
+            } else {
+
+                var data = {
+                    pages: pages
+                }
+                dust.render("pageList", data, function(err, out) {
+                    if(err) {
+                        throw err
+                    }
+                    $("#pageListDiv").html(out);
+                });
+            }
+        })
+    }
+    updatePageList()
+
+    function stringToUrl(str) {
+        if(str) {
+
+            return str.toLowerCase().replace(/[^a-z\d]/gi, "_")
+
+        } else {
+            return undefined
+        }
+    }
+
+    function saveCurrent() {
+        var pageName    = $("#pageName").val()
+        var pageUrl     = $("#pageUrl").val()
+        var pageContent = $("#pageContent").val()
+        var pageFormat  = $('input[name=pageFormat]:checked', '#pageEditForm').val()
+
+        var page = {
+            name: pageName,
+            url: pageUrl,
+            format: pageFormat,
+            content: pageContent
+        }
+
+        Facade.savePage(page, function(err) {
+            updatePageList()
+            if(err) {
+                throw err;
+            } else {
+                $("#pageName").val("")
+                $("#pageUrl").val("")
+                $("#pageContent").val("")
+            }
+        })
+
+        return false;
+    }
+
+    var autoPageUrl = true;
+    $("#pageUrl").keyup(function() {
+        var pageUrl = $("#pageUrl").val()
+        if(!pageUrl || pageUrl === "") {
+            autoPageUrl = true
+        } else {
+            autoPageUrl = false
+        }
+    })
+
+    $("#pageName").keyup(function() {
+        if(autoPageUrl) {
+            $("#pageUrl").val(stringToUrl($("#pageName").val()))
+        }
+    })
+
+
+    $(".saveCurrent").click(saveCurrent)
 </script>

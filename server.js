@@ -13,10 +13,10 @@
     var installChecker    = require("./lib/util/InstallChecker.js")
 //    var DBReady     = require("./lib/database/Helper.js").Event
 
-    app.use(express.methodOverride())
     app.use(express.favicon(__dirname + '/static/img/favicon.ico', { maxAge: 100000000 }))
     app.use('/s', express.static(__dirname + '/static'))
     app.use(express.bodyParser())
+    app.use(express.methodOverride())
     app.use(installChecker.middleware())
     app.use(express.cookieParser())
     app.use(express.session({ secret: 'doctasia wikipedia' }))
@@ -24,6 +24,7 @@
     app.use(passport.session())
     app.use(responseError.middleware())
     app.use(authHandler.middleware())
+    app.use(app.router);
 
     app.get('/', function (req, res) {
         res.sendfile(__dirname+"/static/index.html")

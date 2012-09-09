@@ -84,3 +84,63 @@ Facade.getInstallStatus = function(callback){
         }
     })
 }
+
+
+
+/** ************************************ **/
+/**                 PAGES                **/
+/** ************************************ **/
+
+
+Facade.savePage = function(page, callback){
+    $.ajax({
+        url: "/page",
+        type: "PUT",
+        data: page,
+        success:function(result){
+            if(result && result._error) {
+                callback(new Error(result._error), undefined)
+            } else {
+                callback(undefined, result)
+            }
+        },
+        error: function(err) {
+            callback(err, undefined)
+        }
+    })
+}
+
+Facade.getPage = function(pageUrl, callback){
+    $.ajax({
+        url: "/page/"+pageUrl,
+        type: "GET",
+        success:function(result){
+            if(result && result._error) {
+                callback(new Error(result._error), undefined)
+            } else {
+                callback(undefined, result)
+            }
+        },
+        error: function(err) {
+            callback(err, undefined)
+        }
+    })
+}
+
+Facade.listPages = function(callback){
+    $.ajax({
+        url: "/page/list",
+        type: "POST",
+        data: {},
+        success:function(result){
+            if(result && result._error) {
+                callback(new Error(result._error), undefined)
+            } else {
+                callback(undefined, result)
+            }
+        },
+        error: function(err) {
+            callback(err, undefined)
+        }
+    })
+}
