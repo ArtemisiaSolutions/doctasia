@@ -146,7 +146,7 @@
     var autoPageUrl = true;
     $("#pageUrl").keyup(function() {
         var pageUrl = $("#pageUrl").val()
-        if(!pageUrl || pageUrl === "") {
+        if(!pageUrl || pageUrl === "" || pageUrl === stringToUrl($("#pageName").val())) {
             autoPageUrl = true
         } else {
             autoPageUrl = false
